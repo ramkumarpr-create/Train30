@@ -1,0 +1,20 @@
+{
+  "name": "azutva",
+  "version": "1.0.0",
+  "description": "Azutva Factory Pvt Ltd — full-stack B2B/B2C manufacturing platform (3D printing + CNC machining)",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node src/seed.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "express": "^4.19.2",
+    "multer": "^2.5.0"
+  }
+}

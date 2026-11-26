@@ -1,0 +1,26 @@
+# Render Blueprint — deploys Azutva as a web service with a persistent disk.
+#
+# NOTE: a persistent disk requires a paid "Starter" instance ($7/mo).
+# To run on the FREE tier instead: remove the `disk:` block and set `plan: free`
+# (then data/db.json and uploads/ are ephemeral and reset on every redeploy).
+services:
+  - type: web
+    name: azutva
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/auth/me
+    envVars:
+      - key: AZUTVA_SECRET
+        generateValue: true          # Render generates a long random secret
+      - key: AZUTVA_ADMIN_PASSWORD
+        value: change-this-password  # <- set your own strong password
+      - key: AZUTVA_DATA_DIR
+        value: /data
+      - key: AZUTVA_UPLOAD_DIR
+        value: /data/uploads
+    disk:
+      name: azutva-data
+      mountPath: /data
+      sizeGB: 1

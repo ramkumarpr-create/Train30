@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | Azutva</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .admin-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 40px; }
+    .stat-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 22px; }
+    .stat-card b { display: block; font-size: 32px; color: var(--navy-dark); letter-spacing: -.02em; }
+    .stat-card span { font-size: 13.5px; color: var(--slate); }
+    .admin-panel { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 32px; }
+    .admin-panel__head { padding: 18px 22px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+    .admin-panel__head h2 { margin: 0; font-size: 18px; }
+    .admin-panel__head span { color: var(--gray); font-size: 13px; }
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th, .admin-table td { text-align: left; padding: 12px 16px; font-size: 13.5px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+    .admin-table th { background: var(--surface-3); color: var(--navy-dark); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+    .admin-table tr:last-child td { border-bottom: 0; }
+    .admin-table td.email { color: var(--slate); }
+    .status-select { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-size: 12.5px; background: #fff; }
+    .status-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .status-new { background: #e8f1fb; color: #1466b8; }
+    .status-reviewing { background: #fdeede; color: #d9640f; }
+    .status-quoted { background: #e7e2fb; color: #6b5bd2; }
+    .status-in-production { background: #dbeafe; color: #0b3d6e; }
+    .status-shipped { background: #d5f0e4; color: #1c9c6a; }
+    .status-closed { background: #eef1f5; color: #6b7887; }
+    .admin-table .btn--sm { padding: 5px 11px; font-size: 12.5px; }
+    .contact-row { padding: 14px 22px; border-bottom: 1px solid var(--line-soft); }
+    .contact-row:last-child { border-bottom: 0; }
+    .contact-row b { color: var(--navy-dark); }
+    .contact-row p { margin: 4px 0 0; color: var(--slate); font-size: 14px; }
+    .contact-row .meta { font-size: 12.5px; color: var(--gray); }
+    .empty { padding: 40px 22px; text-align: center; color: var(--gray); font-size: 14.5px; }
+    .gate { max-width: 520px; margin: 60px auto; text-align: center; }
+    .gate h1 { margin-bottom: 10px; }
+    .gate p { color: var(--slate); margin-bottom: 22px; }
+    .modal-overlay { position: fixed; inset: 0; z-index: 700; background: rgba(5,31,58,.62); display: grid; place-items: center; padding: 20px; }
+    .modal-overlay[hidden] { display: none; }
+    .modal-panel { width: min(560px, 100%); max-height: 88vh; overflow-y: auto; background: #fff; border-radius: 16px; padding: 28px; box-shadow: var(--shadow-lg); }
+    .modal-panel__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-panel__head h3 { margin: 0; }
+    .modal-panel__head button { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; width: 36px; height: 36px; display: grid; place-items: center; }
+    .qd-meta { color: var(--gray); font-size: 13px; margin: -8px 0 16px; }
+    .qd-label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--slate); font-weight: 700; margin: 16px 0 6px; }
+    .qd-desc { background: var(--surface-2); border-radius: 10px; padding: 14px; color: var(--ink); font-size: 14.5px; white-space: pre-wrap; }
+    .qd-files { display: grid; gap: 8px; }
+    .qd-files a { color: var(--blue); font-weight: 600; }
+    .qd-files li { display: flex; gap: 8px; align-items: baseline; }
+    @media (max-width: 900px) { .admin-stats { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .admin-stats { grid-template-columns: 1fr; } .admin-table-wrap { overflow-x: auto; } }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="site-header"></div>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container page-hero__inner">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="index.html">Home</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          <span class="here">Admin</span>
+        </nav>
+        <h1>Admin dashboard</h1>
+        <p>Review quote requests, contact messages and account activity.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+
+        <div class="gate" id="admin-gate" hidden>
+          <h1>Access restricted</h1>
+          <p>This area is for Azutva administrators only. Sign in with an admin account to continue.</p>
+          <button class="btn btn--primary btn--lg" type="button" data-auth-action="login">Sign in</button>
+        </div>
+
+        <div id="admin-content" hidden>
+          <div class="admin-stats" id="admin-stats"></div>
+
+          <div class="admin-panel">
+            <div class="admin-panel__head">
+              <h2>Quote requests</h2>
+              <span id="quotes-count">0</span>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr><th>Date</th><th>Customer</th><th>Process</th><th>Files</th><th>Status</th><th></th></tr>
+                </thead>
+                <tbody id="quotes-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="admin-panel">
+            <div class="admin-panel__head">
+              <h2>Contact messages</h2>
+              <span id="contacts-count">0</span>
+            </div>
+            <div id="contacts-body"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <div class="modal-overlay" id="quote-detail-modal" hidden>
+    <div class="modal-panel">
+      <div class="modal-panel__head">
+        <h3 id="qd-name">Quote detail</h3>
+        <button type="button" data-qd-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <p class="qd-meta" id="qd-meta"></p>
+      <div class="qd-label">Project description</div>
+      <div class="qd-desc" id="qd-desc"></div>
+      <div class="qd-label">Files</div>
+      <ul class="qd-files" id="qd-files"></ul>
+      <div class="qd-label">Status</div>
+      <select class="status-select" id="qd-status" style="width:100%">
+        <option value="new">new</option>
+        <option value="reviewing">reviewing</option>
+        <option value="quoted">quoted</option>
+        <option value="in-production">in-production</option>
+        <option value="shipped">shipped</option>
+        <option value="closed">closed</option>
+      </select>
+    </div>
+  </div>
+
+  <script src="js/partials.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
